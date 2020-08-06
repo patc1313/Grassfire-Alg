@@ -1,0 +1,81 @@
+Created by Patrick Webb
+
+
+function SearchingChallenge(strArr) {
+  // code goes here  
+  if (strArr.length == 0 || strArr === undefined) {
+    return 0;
+  }
+
+  var matrix = [];
+  
+  // Build Matrix
+  // -------------------------------------------------
+  for(var i=0; i<strArr.length; i++) {
+      matrix[i] = new Array(strArr[0].length);
+  }
+
+  for (var row = 0; row < strArr.length; row++) {
+    chars = strArr[row].split('');
+    for (var col = 0; col < chars.length; col++) {
+      matrix[row][col] = chars[col];
+    }
+  }
+  // -------------------------------------------------
+
+  var zerosSeen = [];
+  var cnt = 0;
+
+  // Looking for groupings
+  for(x=0; x<matrix.length; x++) {
+    for(y=0; y<matrix[x].length; y++) {
+      if (matrix[x][y] == 0) { 
+        cnt += LookForGroupings(x, y, matrix, zerosSeen, 0);
+      }
+    }
+  }
+
+  return cnt; 
+}
+   
+// treat lone 0 as a group as well?
+// Parse through all spots in matrix looking for grouping of 0's
+// do not want to consider a zero that is already checked
+function LookForGroupings(xPos, yPos, matrix, zerosSeen, groupsCounted) {
+  var tally = groupsCounted;
+
+  // have we checked this spot already?
+  if (zerosSeen.indexOf("xPos: " + xPos + ", yPos: " + yPos) < 0) {
+    zerosSeen.push("xPos: " + xPos + ", yPos: " + yPos)
+
+    // check if surronding spots have 0
+    if (coordinate_exists(xPos-1, yPos, matrix.length, matrix[0].length) && matrix[xPos-1][yPos] == 0) {
+      LookForGroupings(xPos-1, yPos, matrix, zerosSeen, tally); 
+      tally = 1;
+    }
+    if (coordinate_exists(xPos+1,yPos, matrix.length, matrix[0].length) && matrix[xPos+1][yPos] == 0) {
+      LookForGroupings(xPos+1, yPos, matrix, zerosSeen, tally); 
+      tally = 1;
+    }
+    if (coordinate_exists(xPos, yPos-1, matrix.length, matrix[0].length) && matrix[xPos][yPos-1] == 0) {
+      LookForGroupings(xPos, yPos-1,  matrix, zerosSeen, tally); 
+      tally = 1;
+    }
+    if (coordinate_exists(xPos, yPos+1, matrix.length, matrix[0].length) && matrix[xPos][yPos+1] == 0) {
+      LookForGroupings(xPos, yPos+1, matrix, zerosSeen, tally); 
+      tally = 1;
+    }
+  } else {
+    tally = 0;
+  }
+  
+  return tally;
+}  
+
+function coordinate_exists(xPos, yPos, rowLength, colLength) {
+  if (xPos >= 0 && xPos <= (rowLength-1) && yPos >= 0 && yPos <= (colLength-1)) return true;
+  else return false;
+}
+
+// keep this function call here
+console.log(SearchingChallenge(["01010", "01010", "01010", "00000"]));
